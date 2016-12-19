@@ -15,9 +15,9 @@ Cada jugador tiene un número fijo de vidas, y empiezan a jugar a las palabras e
 
 Además, se añaden reglas relacionadas con un conjunto de palabras envenenadas:
 
--Un árbitro (el servidor que hace host del juego) crea una proposición lógica que cumplen algunas palabras y otras no. Al conjunto de palabras que cumplen esta proposición las llamamos *palabras envenenadas*. (En la sección de Aspectos básicos de la implementación se incluye lo que puede elegirse como proposición lógica y lo que no).
--Cada vez que un jugador dice una palabra envenenada, el árbitro le comunica a ese jugador que acaba de ser envenenado, y por tanto pierde una vida.
--Cuando un jugador diga una palabra que no está en el diccionario, que se haya dicho antes o se quede sin vidas, se acaba el juego.
+- Un árbitro (el servidor que hace host del juego) crea una proposición lógica que cumplen algunas palabras y otras no. Al conjunto de palabras que cumplen esta proposición las llamamos *palabras envenenadas*. (En la sección de Aspectos básicos de la implementación se incluye lo que puede elegirse como proposición lógica y lo que no).
+- Cada vez que un jugador dice una palabra envenenada, el árbitro le comunica a ese jugador que acaba de ser envenenado, y por tanto pierde una vida.
+- Cuando un jugador diga una palabra que no está en el diccionario, que se haya dicho antes o se quede sin vidas, se acaba el juego.
 
 La idea básica es pensar en cómo distinguir palabras envenenadas de palabras no envenenadas, que es a lo que hice referencia antes cuando hablaba del aspecto más importante del bot.
 
@@ -26,12 +26,13 @@ La idea básica es pensar en cómo distinguir palabras envenenadas de palabras n
 Se presenta un bot de ejemplo en PWClienteEjemplo.java y PWClienteEjemplo.cpp, uno en Java y otro en C++. Los dos hacen exactamente lo mismo, dicen una palabra al azar entre todas las que pueden decir. Si queréis escribir el programa en alguno de estos dos lenguajes, no tenéis más que coger estas plantillas y cambiar cómo se escoge la nueva palabra. Sin embargo, se puede hacer perfectamente en cualquier otro lenguaje, porque al final vuestros programas se comunican con la salida y entrada estándar.
 
 Los programas necesitan:
--Leer el diccionario de palabras listado-general-new.txt. Si cogéis alguna de las dos plantillas, este paso ya lo tenéis hecho.
--Escribir vuestro nick para poder distinguiros dentro del juego. En los ejemplos están puestos Charmander y Squirtle, pero estaría bien que los cambiarais.
--Leer un número. Si es un 1, empezáis vosotros; si es un 0, no empezáis.
--Cuando sea vuestro turno tendréis que leer una palabra, eliminarla del diccionario para no repetirla, y escribir una palabra que empiece por la última letra de la palabra que habéis leído. Si empezáis la partida, la primera palabra que digáis puede ser cualquiera del diccionario. 
--Leer un número. Si es un 1, la palabra que habéis dicho estaba envenenada; si es un 0 no lo estaba. Lo suyo es mantener un vector o un set de las palabras envenenadas, y otro de las que no.
--Repetís vuestro turno hasta que os llega la palabra "GAME OVER", que indica el fin de la partida. Justo después, se os comunica en otro string cómo habéis quedado: "YOU WIN" si habéis ganado, "YOU LOST" si habéis perdido o "YOU WIN, PERFECT" si habéis ganado con todas las vidas.
+
+- Leer el diccionario de palabras listado-general-new.txt. Si cogéis alguna de las dos plantillas, este paso ya lo tenéis hecho.
+- Escribir vuestro nick para poder distinguiros dentro del juego. En los ejemplos están puestos Charmander y Squirtle, pero estaría bien que los cambiarais.
+- Leer un número. Si es un 1, empezáis vosotros; si es un 0, no empezáis.
+- Cuando sea vuestro turno tendréis que leer una palabra, eliminarla del diccionario para no repetirla, y escribir una palabra que empiece por la última letra de la palabra que habéis leído. Si empezáis la partida, la primera palabra que digáis puede ser cualquiera del diccionario. 
+- Leer un número. Si es un 1, la palabra que habéis dicho estaba envenenada; si es un 0 no lo estaba. Lo suyo es mantener un vector o un set de las palabras envenenadas, y otro de las que no.
+- Repetís vuestro turno hasta que os llega la palabra "GAME OVER", que indica el fin de la partida. Justo después, se os comunica en otro string cómo habéis quedado: "YOU WIN" si habéis ganado, "YOU LOST" si habéis perdido o "YOU WIN, PERFECT" si habéis ganado con todas las vidas.
 
 Toda la información sobre cómo va la partida se refleja en la terminal en la que lanzáis el servidor, que comunica constantemente el estado de la partida con las vidas de los dos jugadores, la proposición lógica de las palabras envenenadas y el final de la partida.
 
