@@ -42,7 +42,7 @@ int main(){
   }
 
   bool game_on = true;
-  while(game_on){
+  while(game_on && cin.good()){
     getline(cin, buferRecepcion);
     if(buferRecepcion == "GAME OVER"){
       game_on = false;
