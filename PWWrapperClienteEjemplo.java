@@ -20,7 +20,7 @@ import java.util.Random;
 //import com.google.common.collect.Multimap;
 //import org.apache.commons.collections4.MultiMap;
 
-public class PWWrapper {
+public class PWWrapperClienteEjemplo {
 	private static String name = "Charmander";
 
 
