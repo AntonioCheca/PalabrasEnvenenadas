@@ -3,7 +3,6 @@ import java.io.BufferedReader;
 import java.io.PrintWriter;
 import java.io.InputStreamReader;
 import java.net.Socket;
-import java.util.Random;
 import java.util.Arrays;
 import java.util.ArrayList;
 
@@ -31,14 +30,8 @@ public class ProcesadorPW extends Thread {
 	public int[] vidas;
 	public String[] names;
 
-	private int RNG;
-	private int n;
-	private char[] azarchain;
-
 	private ArrayList<String> diccionario;
-
-	// Para que la respuesta sea siempre diferente, usamos un generador de números aleatorios.
-	private Random random;
+  private PWCondicion condicion;
 
 	// Constructor que tiene como parámetro una referencia al socket abierto en por otra clase
 	public ProcesadorPW(Socket socketServicio_J1, Socket socketServicio_J2, ArrayList<String> copia_diccionario) {
@@ -48,99 +41,20 @@ public class ProcesadorPW extends Thread {
 		vidas = new int[2];
 		this.socketConexiones[0] = socketServicio_J1;
 		this.socketConexiones[1] = socketServicio_J2;
-		random = new Random();
 		vidas[0] = MAX_VIDAS;
 		vidas[1] = MAX_VIDAS;
 		names = new String[2];
 		diccionario = copia_diccionario;
-		boolean tiene_sentido = false;
-
-		while(!tiene_sentido){
-			RNG = random.nextInt(5); ///////////////////////////////////////////////////////////////////////
-
-			// Definimos n.
-			n = random.nextInt();
-			//
-			switch(RNG){	//Necesitamos cambiar n según cada caso, para facilitar la creación de nuevas funciones booleanas
-				case 4:
-					n = 2+(n%12);
-					break;
-			}
-			azarchain = new char[5];
-
-
-			for(int i=0; i < 5; i++)
-				azarchain[i] = (char)(random.nextInt(26)+'a');
-
-			tiene_sentido = BuenAzar();
-		}
+    condicion = new PWCondicion(diccionario);
 
 	}
 
-	private void EscribirCondicion(){
-		switch(RNG){
-			case 0:
-				System.out.println("QUE EMPIECE POR " + azarchain[0]);
-				break;
-			case 1:
-				System.out.println("QUE LA PRIMERA NO SEA " + azarchain[0]);
-				break;
-			case 2:
-				System.out.println("QUE LA ÚLTIMA SEA " + azarchain[0]);
-				break;
-			case 3:
-				System.out.println("QUE LA ÚLTIMA LETRA NO SEA " + azarchain[0]);
-				break;
-			case 4:
-				System.out.println("QUE EL NÚMERO DE LETRAS SEA " + n);
-				break;
-		}
+	private void EscribirCondicion() {
+    System.out.println(condicion.toString());
 	}
 
-	/*
-		CONDICIONES:
-				Todos los subconjuntos de palabras deben contener al menos 2*MAX_VIDAS palabras y que al menos haya 100 palabras no envenenadas (véase BuenAzar).
-			ESTÁS ENVENENADO SI...
-			0- Primera letra sea 'x'.
-			1- Que la primera letra no sea 'x'.
-			2- Última letra sea 'x'.
-			3- Que la última letra no sea 'x'.
-			4- Número de letras de la palabra sea 'n'.
-	*/
-	private boolean isPoisoned(String word){
-		boolean is_poisoned = false;
-		switch(RNG){
-			case 0:
-				is_poisoned = (azarchain[0] == word.charAt(0));
-				break;
-			case 1:
-				is_poisoned = (azarchain[0] != word.charAt(0));
-				break;
-			case 2:
-				is_poisoned = ( azarchain[0] == word.charAt(word.length() -1) );
-				break;
-			case 3:
-				is_poisoned = ( azarchain[0] != word.charAt(word.length() -1) );
-				break;
-			case 4:
-				is_poisoned = (word.length() == n);
-				break;
-			default: break;
-		}
-		return is_poisoned;
-	}
-
-	private int PoisonedWords(){
-		int contadorPalabras=0;
-		for(int i=0; i<diccionario.size(); i++)
-			if( isPoisoned(diccionario.get(i)) )
-				contadorPalabras++;
-
-		return contadorPalabras;
-	}
-	private boolean BuenAzar(){
-		int poisoned_words = PoisonedWords();
-		return( poisoned_words > 2*MAX_VIDAS && poisoned_words < diccionario.size() - 100);
+	private boolean isPoisoned(String word) {
+    return condicion.isPoisoned(word);
 	}
 
 	private ArrayList<String> PalabrasQueEmpiecenPor(char x){
@@ -233,7 +147,7 @@ public class ProcesadorPW extends Thread {
 			System.out.println("NOMBRES: " + names[0] + " " + names[1]);
 
 			// Quién empieza
-			int first_player = random.nextInt(2);
+			int first_player = condicion.getPrimerJugador();
 			winner = -1;
 
 			// Avisar quién empieza
