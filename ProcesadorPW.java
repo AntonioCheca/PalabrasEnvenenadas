@@ -1,14 +1,9 @@
-//
-// YodafyServidorIterativo
-// (CC) jjramos, 2012
-//
 import java.io.IOException;
 import java.io.BufferedReader;
 import java.io.PrintWriter;
 import java.io.InputStreamReader;
 import java.net.Socket;
 import java.util.Random;
-//import com.google.common.collect.Multimap;
 import java.util.Arrays;
 import java.util.ArrayList;
 import java.io.File;
@@ -16,10 +11,6 @@ import java.io.FileInputStream;
 import java.io.FileNotFoundException;
 
 
-//
-// Nota: si esta clase extendiera la clase Thread, y el procesamiento lo hiciera el método "run()",
-// ¡Podríamos realizar un procesado concurrente!
-//
 public class ProcesadorPW extends Thread {
 	// Referencia a un socket para enviar/recibir las peticiones/respuestas
 	private Socket[] socketConexiones;
@@ -28,18 +19,15 @@ public class ProcesadorPW extends Thread {
 	// stream de escritura (por aquí se envía los datos al cliente)
 	private PrintWriter[] outPrinters;
 
-public static final String ANSI_RESET = "\u001B[0m";
-public static final String ANSI_BLACK = "\u001B[30m";
-public static final String ANSI_RED = "\u001B[31m";
-public static final String ANSI_GREEN = "\u001B[32m";
-public static final String ANSI_YELLOW = "\u001B[33m";
-public static final String ANSI_BLUE = "\u001B[34m";
-public static final String ANSI_PURPLE = "\u001B[35m";
-public static final String ANSI_CYAN = "\u001B[36m";
-public static final String ANSI_WHITE = "\u001B[37m";
-
-
-
+	public static final String ANSI_RESET = "\u001B[0m";
+	public static final String ANSI_BLACK = "\u001B[30m";
+	public static final String ANSI_RED = "\u001B[31m";
+	public static final String ANSI_GREEN = "\u001B[32m";
+	public static final String ANSI_YELLOW = "\u001B[33m";
+	public static final String ANSI_BLUE = "\u001B[34m";
+	public static final String ANSI_PURPLE = "\u001B[35m";
+	public static final String ANSI_CYAN = "\u001B[36m";
+	public static final String ANSI_WHITE = "\u001B[37m";
 
 	public static final int MAX_VIDAS = 10;
 	public static final int VELOCIDAD = 2;
@@ -61,9 +49,9 @@ public static final String ANSI_WHITE = "\u001B[37m";
 		inReaders = new BufferedReader[2];
 		outPrinters = new PrintWriter[2];
 		vidas = new int[2];
-		this.socketConexiones[0]=socketServicio_J1;
-		this.socketConexiones[1]=socketServicio_J2;
-		random=new Random();
+		this.socketConexiones[0] = socketServicio_J1;
+		this.socketConexiones[1] = socketServicio_J2;
+		random = new Random();
 		vidas[0] = MAX_VIDAS;
 		vidas[1] = MAX_VIDAS;
 		names = new String[2];
@@ -211,8 +199,7 @@ public static final String ANSI_WHITE = "\u001B[37m";
 
 	// Aquí es donde se realiza el procesamiento realmente:
 	public void run(){
-//System.out.println("RNG = " + RNG + ", n = " + n + ", azarchain = " + azarchain[0]);
-
+    //System.out.println("RNG = " + RNG + ", n = " + n + ", azarchain = " + azarchain[0]);
 
 		// Como máximo leeremos un bloque de 1024 bytes. Esto se puede modificar.
 		String wordRecibido;
