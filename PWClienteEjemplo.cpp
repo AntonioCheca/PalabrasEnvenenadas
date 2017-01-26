@@ -3,6 +3,7 @@
 #include <fstream>
 #include <algorithm>
 #include <cstdlib>
+#include <time.h>
 
 using namespace std;
 
