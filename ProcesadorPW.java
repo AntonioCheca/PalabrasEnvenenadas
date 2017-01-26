@@ -6,9 +6,6 @@ import java.net.Socket;
 import java.util.Random;
 import java.util.Arrays;
 import java.util.ArrayList;
-import java.io.File;
-import java.io.FileInputStream;
-import java.io.FileNotFoundException;
 
 
 public class ProcesadorPW extends Thread {
@@ -44,7 +41,7 @@ public class ProcesadorPW extends Thread {
 	private Random random;
 
 	// Constructor que tiene como parámetro una referencia al socket abierto en por otra clase
-	public ProcesadorPW(Socket socketServicio_J1, Socket socketServicio_J2) {
+	public ProcesadorPW(Socket socketServicio_J1, Socket socketServicio_J2, ArrayList<String> copia_diccionario) {
 		socketConexiones = new Socket[2];
 		inReaders = new BufferedReader[2];
 		outPrinters = new PrintWriter[2];
@@ -55,28 +52,8 @@ public class ProcesadorPW extends Thread {
 		vidas[0] = MAX_VIDAS;
 		vidas[1] = MAX_VIDAS;
 		names = new String[2];
-		diccionario = new ArrayList<>();
-
-		File file = new File("./listado-general-new.txt");
-		FileInputStream fis = null;
-		BufferedReader reader = null;
-
-		try {
-			fis = new FileInputStream(file);
-			reader = new BufferedReader(new InputStreamReader(fis));
-
-			String word = reader.readLine();
-			while(word != null){
-				diccionario.add(word);
-				word = reader.readLine();
-			}
-		} catch (FileNotFoundException ex){
-			System.out.println("Error leyendo el archivo");
-		} catch (IOException ex){
-			System.out.println("Error en la salida entrada");
-		}
+		diccionario = copia_diccionario;
 		boolean tiene_sentido = false;
-		System.out.println("Diccionario leído.");
 
 		while(!tiene_sentido){
 			RNG = random.nextInt(5); ///////////////////////////////////////////////////////////////////////
@@ -199,7 +176,7 @@ public class ProcesadorPW extends Thread {
 
 	// Aquí es donde se realiza el procesamiento realmente:
 	public void run(){
-    //System.out.println("RNG = " + RNG + ", n = " + n + ", azarchain = " + azarchain[0]);
+		//System.out.println("RNG = " + RNG + ", n = " + n + ", azarchain = " + azarchain[0]);
 
 		// Como máximo leeremos un bloque de 1024 bytes. Esto se puede modificar.
 		String wordRecibido;
