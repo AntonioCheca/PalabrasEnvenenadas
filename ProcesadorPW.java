@@ -1,25 +1,12 @@
-//
-// YodafyServidorIterativo
-// (CC) jjramos, 2012
-//
 import java.io.IOException;
 import java.io.BufferedReader;
 import java.io.PrintWriter;
 import java.io.InputStreamReader;
 import java.net.Socket;
-import java.util.Random;
-//import com.google.common.collect.Multimap;
 import java.util.Arrays;
 import java.util.ArrayList;
-import java.io.File;
-import java.io.FileInputStream;
-import java.io.FileNotFoundException;
 
 
-//
-// Nota: si esta clase extendiera la clase Thread, y el procesamiento lo hiciera el método "run()",
-// ¡Podríamos realizar un procesado concurrente!
-//
 public class ProcesadorPW extends Thread {
 	// Referencia a un socket para enviar/recibir las peticiones/respuestas
 	private Socket[] socketConexiones;
@@ -28,154 +15,46 @@ public class ProcesadorPW extends Thread {
 	// stream de escritura (por aquí se envía los datos al cliente)
 	private PrintWriter[] outPrinters;
 
-public static final String ANSI_RESET = "\u001B[0m";
-public static final String ANSI_BLACK = "\u001B[30m";
-public static final String ANSI_RED = "\u001B[31m";
-public static final String ANSI_GREEN = "\u001B[32m";
-public static final String ANSI_YELLOW = "\u001B[33m";
-public static final String ANSI_BLUE = "\u001B[34m";
-public static final String ANSI_PURPLE = "\u001B[35m";
-public static final String ANSI_CYAN = "\u001B[36m";
-public static final String ANSI_WHITE = "\u001B[37m";
-
-
-
+	public static final String ANSI_RESET = "\u001B[0m";
+	public static final String ANSI_BLACK = "\u001B[30m";
+	public static final String ANSI_RED = "\u001B[31m";
+	public static final String ANSI_GREEN = "\u001B[32m";
+	public static final String ANSI_YELLOW = "\u001B[33m";
+	public static final String ANSI_BLUE = "\u001B[34m";
+	public static final String ANSI_PURPLE = "\u001B[35m";
+	public static final String ANSI_CYAN = "\u001B[36m";
+	public static final String ANSI_WHITE = "\u001B[37m";
 
 	public static final int MAX_VIDAS = 10;
 	public static final int VELOCIDAD = 2;
 	public int[] vidas;
 	public String[] names;
 
-	private int RNG;
-	private int n;
-	private char[] azarchain;
-
 	private ArrayList<String> diccionario;
-
-	// Para que la respuesta sea siempre diferente, usamos un generador de números aleatorios.
-	private Random random;
+  private PWCondicion condicion;
 
 	// Constructor que tiene como parámetro una referencia al socket abierto en por otra clase
-	public ProcesadorPW(Socket socketServicio_J1, Socket socketServicio_J2) {
+	public ProcesadorPW(Socket socketServicio_J1, Socket socketServicio_J2, ArrayList<String> copia_diccionario) {
 		socketConexiones = new Socket[2];
 		inReaders = new BufferedReader[2];
 		outPrinters = new PrintWriter[2];
 		vidas = new int[2];
-		this.socketConexiones[0]=socketServicio_J1;
-		this.socketConexiones[1]=socketServicio_J2;
-		random=new Random();
+		this.socketConexiones[0] = socketServicio_J1;
+		this.socketConexiones[1] = socketServicio_J2;
 		vidas[0] = MAX_VIDAS;
 		vidas[1] = MAX_VIDAS;
 		names = new String[2];
-		diccionario = new ArrayList<>();
-
-		File file = new File("./listado-general-new.txt");
-		FileInputStream fis = null;
-		BufferedReader reader = null;
-
-		try {
-			fis = new FileInputStream(file);
-			reader = new BufferedReader(new InputStreamReader(fis));
-
-			String word = reader.readLine();
-			while(word != null){
-				diccionario.add(word);
-				word = reader.readLine();
-			}
-		} catch (FileNotFoundException ex){
-			System.out.println("Error leyendo el archivo");
-		} catch (IOException ex){
-			System.out.println("Error en la salida entrada");
-		}
-		boolean tiene_sentido = false;
-		System.out.println("Diccionario leído.");
-
-		while(!tiene_sentido){
-			RNG = random.nextInt(5); ///////////////////////////////////////////////////////////////////////
-
-			// Definimos n.
-			n = random.nextInt();
-			//
-			switch(RNG){	//Necesitamos cambiar n según cada caso, para facilitar la creación de nuevas funciones booleanas
-				case 4:
-					n = 2+(n%12);
-					break;
-			}
-			azarchain = new char[5];
-
-
-			for(int i=0; i < 5; i++)
-				azarchain[i] = (char)(random.nextInt(26)+'a');
-
-			tiene_sentido = BuenAzar();
-		}
+		diccionario = copia_diccionario;
+    condicion = new PWCondicion(diccionario);
 
 	}
 
-	private void EscribirCondicion(){
-		switch(RNG){
-			case 0:
-				System.out.println("QUE EMPIECE POR " + azarchain[0]);
-				break;
-			case 1:
-				System.out.println("QUE LA PRIMERA NO SEA " + azarchain[0]);
-				break;
-			case 2:
-				System.out.println("QUE LA ÚLTIMA SEA " + azarchain[0]);
-				break;
-			case 3:
-				System.out.println("QUE LA ÚLTIMA LETRA NO SEA " + azarchain[0]);
-				break;
-			case 4:
-				System.out.println("QUE EL NÚMERO DE LETRAS SEA " + n);
-				break;
-		}
+	private void EscribirCondicion() {
+    System.out.println(condicion.toString());
 	}
 
-	/*
-		CONDICIONES:
-				Todos los subconjuntos de palabras deben contener al menos 2*MAX_VIDAS palabras y que al menos haya 100 palabras no envenenadas (véase BuenAzar).
-			ESTÁS ENVENENADO SI...
-			0- Primera letra sea 'x'.
-			1- Que la primera letra no sea 'x'.
-			2- Última letra sea 'x'.
-			3- Que la última letra no sea 'x'.
-			4- Número de letras de la palabra sea 'n'.
-	*/
-	private boolean isPoisoned(String word){
-		boolean is_poisoned = false;
-		switch(RNG){
-			case 0:
-				is_poisoned = (azarchain[0] == word.charAt(0));
-				break;
-			case 1:
-				is_poisoned = (azarchain[0] != word.charAt(0));
-				break;
-			case 2:
-				is_poisoned = ( azarchain[0] == word.charAt(word.length() -1) );
-				break;
-			case 3:
-				is_poisoned = ( azarchain[0] != word.charAt(word.length() -1) );
-				break;
-			case 4:
-				is_poisoned = (word.length() == n);
-				break;
-			default: break;
-		}
-		return is_poisoned;
-	}
-
-	private int PoisonedWords(){
-		int contadorPalabras=0;
-		for(int i=0; i<diccionario.size(); i++)
-			if( isPoisoned(diccionario.get(i)) )
-				contadorPalabras++;
-
-		return contadorPalabras;
-	}
-	private boolean BuenAzar(){
-		int poisoned_words = PoisonedWords();
-		return( poisoned_words > 2*MAX_VIDAS && poisoned_words < diccionario.size() - 100);
+	private boolean isPoisoned(String word) {
+    return condicion.isPoisoned(word);
 	}
 
 	private ArrayList<String> PalabrasQueEmpiecenPor(char x){
@@ -211,8 +90,7 @@ public static final String ANSI_WHITE = "\u001B[37m";
 
 	// Aquí es donde se realiza el procesamiento realmente:
 	public void run(){
-//System.out.println("RNG = " + RNG + ", n = " + n + ", azarchain = " + azarchain[0]);
-
+		//System.out.println("RNG = " + RNG + ", n = " + n + ", azarchain = " + azarchain[0]);
 
 		// Como máximo leeremos un bloque de 1024 bytes. Esto se puede modificar.
 		String wordRecibido;
@@ -269,7 +147,7 @@ public static final String ANSI_WHITE = "\u001B[37m";
 			System.out.println("NOMBRES: " + names[0] + " " + names[1]);
 
 			// Quién empieza
-			int first_player = random.nextInt(2);
+			int first_player = condicion.getPrimerJugador();
 			winner = -1;
 
 			// Avisar quién empieza

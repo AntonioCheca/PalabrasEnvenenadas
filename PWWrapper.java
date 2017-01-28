@@ -21,10 +21,12 @@ import java.util.Random;
 //import org.apache.commons.collections4.MultiMap;
 
 public class PWWrapper {
-	private static String name = "Charmander";
-
-
 	public static void main(String[] args) {
+   if (args.length < 1) {
+     System.out.println("Debes indicar el programa como argumento");
+     return;
+   }
+
    OutputStream procOut = null;
    InputStream procIn = null;
 
@@ -38,7 +40,7 @@ public class PWWrapper {
    try
    {
 			//Aquí va vuestro programa
-      Process process = Runtime.getRuntime().exec ("./PWClienteEjemplo");
+      Process process = Runtime.getRuntime().exec(args[0]);
       procOut = process.getOutputStream();
       procIn = process.getInputStream();
 
